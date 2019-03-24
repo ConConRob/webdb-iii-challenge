@@ -43,4 +43,22 @@ routes.get("/:id/students", async (req, res) => {
     res.status(500).json({ message: "Server error", error })
   }
 });
+
+routes.post("/", async (req,res) => {
+  if(!req.body.name){
+    res.status(400).json({message: "Cohort name is required"})
+  }else {
+    try{
+      const idArray = await db("cohorts").insert(req.body);
+      if(idArray.length === 0){
+        res.status(409).json({message: "Cohort name unavailable"})
+      } else {
+        res.status(201).json({...req.body, id:idArray[0]})
+      }
+    }catch(error){
+      res.status(500).json({message:"Server error", error})
+    }
+  }
+  
+})
 module.exports = routes;
