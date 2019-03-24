@@ -33,32 +33,50 @@ routes.get("/:id", async (req, res) => {
 });
 
 routes.get("/:id/students", async (req, res) => {
-  try{
+  try {
     const students = await db
       .select("*")
       .from("students")
-      .where("cohort_id","=", req.params.id);
-    res.status(200).json(students)
+      .where("cohort_id", "=", req.params.id);
+    res.status(200).json(students);
   } catch (error) {
-    res.status(500).json({ message: "Server error", error })
+    res.status(500).json({ message: "Server error", error });
   }
 });
 
-routes.post("/", async (req,res) => {
-  if(!req.body.name){
-    res.status(400).json({message: "Cohort name is required"})
-  }else {
-    try{
+routes.post("/", async (req, res) => {
+  if (!req.body.name) {
+    res.status(400).json({ message: "Cohort name is required" });
+  } else {
+    try {
       const idArray = await db("cohorts").insert(req.body);
-      if(idArray.length === 0){
-        res.status(409).json({message: "Cohort name unavailable"})
+      if (idArray.length === 0) {
+        res.status(409).json({ message: "Cohort name unavailable" });
       } else {
-        res.status(201).json({...req.body, id:idArray[0]})
+        res.status(201).json({ ...req.body, id: idArray[0] });
       }
-    }catch(error){
-      res.status(500).json({message:"Server error", error})
+    } catch (error) {
+      res.status(500).json({ message: "Server error", error });
     }
   }
-  
-})
+});
+
+routes.put("/:id", async (req, res) => {
+  if (!req.body.name) {
+    res.status(400).json({ message: "Cohort name is required" });
+  } else {
+    try {
+      const numUpdated = await db("cohorts")
+        .where("id", "=", req.params.id)
+        .update({ name: req.body.name });
+      if (!numUpdated) {
+        res.status(404).json({ Message: "Cohort does not exist to pdate" });
+      } else {
+        res.status(200).json("Update successfull");
+      }
+    } catch (error) {
+      res.status(500).json({ message: "Server error", error });
+    }
+  }
+});
 module.exports = routes;
