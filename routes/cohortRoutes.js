@@ -70,7 +70,7 @@ routes.put("/:id", async (req, res) => {
         .where("id", "=", req.params.id)
         .update({ name: req.body.name });
       if (!numUpdated) {
-        res.status(404).json({ Message: "Cohort does not exist to pdate" });
+        res.status(404).json({ Message: "Cohort does not exist to update" });
       } else {
         res.status(200).json("Update successfull");
       }
@@ -79,4 +79,21 @@ routes.put("/:id", async (req, res) => {
     }
   }
 });
+
+routes.delete("/:id", async (req, res) => {
+  try {
+    const numDeleted = await db("cohorts")
+      .where("id", "=", req.params.id)
+      .del();
+    if (!numDeleted) {
+      res.status(404).json({ Message: "Cohort does not exist to delete" });
+    } else {
+      res.status(204).send();
+    }
+  } catch (error) {
+    console.log(error)
+    res.status(500).json({ message: "Server error", error });
+  }
+});
+
 module.exports = routes;
