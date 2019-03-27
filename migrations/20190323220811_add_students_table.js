@@ -6,7 +6,8 @@ exports.up = function(knex, Promise) {
       .integer("cohort_id")
       .notNullable()
       .references("id")
-      .inTable("cohorts");
+      .inTable("cohorts")
+      .onDelete('CASCADE');
   });
 };
 
